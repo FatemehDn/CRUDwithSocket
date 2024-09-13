@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enter User Data</title>
+  </head>
+  <body>
+
+    <h2>Login</h2>
+    <form id="loginForm">
+      <form id="loginForm" autocomplete="off"> 
+      <label for="name">Name:</label>
+      <input type="text" id="name" autocomplete="off" required><br><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" autocomplete="off" required><br><br>
+      <button type="submit">Login</button>
+    </form>
+  
+    <div id="loginMessage"></div>
+
+
+    <h1>Enter User Data</h1>
+    <form id="userForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required /><br /><br />
+      <label for="password">Password:</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+      /><br /><br />
+      <button type="submit">Submit</button>
+    </form>
+    <h1>Get User Data by ID</h1>
+    <form id="getUserForm">
+      <label for="userId">User ID:</label>
+      <input type="number" id="userId" name="userId" required />
+      <button type="submit">Get User Data</button>
+    </form>
+
+    <div id="userData"></div>
+
+    <h1>Update User by ID</h1>
+    <form id="updateUserForm">
+      <label for="updateUserId">User ID:</label>
+      <input type="number" id="updateUserId" name="updateUserId" required />
+      <label for="updateName">New Name:</label>
+      <input type="text" id="updateName" name="updateName" />
+      <label for="updatePassword">New Password:</label>
+      <input type="password" id="updatePassword" name="updatePassword" />
+      <button type="submit">Update User</button>
+    </form>
+
+    <div id="updateMessage"></div>
+
+    <h1>Delete User by ID</h1>
+    <form id="deleteUserForm">
+      <label for="deleteUserId">User ID:</label>
+      <input type="number" id="deleteUserId" name="deleteUserId" required />
+      <button type="submit">Delete User</button>
+    </form>
+
+    <div id="deleteMessage"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/index.js"></script>
+  </body>
+</html>
