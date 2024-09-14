@@ -5,7 +5,8 @@ const socketio = require("socket.io");
 const { User } = require("./dataBase/models");
 const { getCache, setCache, deleteCache } = require("./redis");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt"); 
+const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
@@ -13,12 +14,24 @@ const io = socketio(server);
 
 app.use(express.static(path.join(__dirname, "public")));
 
+const authenticateToken = async (socket) => {
+  const token = socket.handshake.auth.token?.split(" ")[1];
+  console.log("Token received:", token);
+  if (!token) {
+    throw new Error("Token not defined.");
+  }
+  try {
+    const user = await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  } catch (err) {
+    throw new Error("Token not valid.");
+  }
+};
+
 io.on("connection", (socket) => {
   console.log("new user connected");
 
   socket.on("login", async (data) => {
     const { name, password } = data;
-
     try {
       const user = await User.findOne({ where: { name } });
       if (!user) {
@@ -43,7 +56,9 @@ io.on("connection", (socket) => {
   // Listen to submitData
   socket.on("submitData", async (data) => {
     const { name, password } = data;
+
     try {
+      await authenticateToken(socket);
       //save data in mysql
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await User.create({ name, password: hashedPassword });
@@ -55,6 +70,7 @@ io.on("connection", (socket) => {
 
   socket.on("getUserById", async (id) => {
     try {
+      await authenticateToken(socket);
       let cache = await getCache(`user:${id}`);
       // console.log(cache);
 
@@ -79,6 +95,7 @@ io.on("connection", (socket) => {
 
   socket.on("deleteUserById", async (id) => {
     try {
+      await authenticateToken(socket);
       const user = await User.findByPk(id);
       if (!user) {
         socket.emit("userNotFound", { message: "user not found." });
@@ -93,8 +110,11 @@ io.on("connection", (socket) => {
   });
 
   socket.on("updateUserById", async (data) => {
+    console.log(data);
+    
     const { id, name, password } = data;
     try {
+      await authenticateToken(socket);
       const user = await User.findByPk(id);
       if (!user) {
         socket.emit("userNotFound", { message: "user not found." });
